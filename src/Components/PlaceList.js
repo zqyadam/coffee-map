@@ -5,7 +5,7 @@ class PlaceList extends Component {
   state = {
     filterd_places: [],
     places: [],
-    current_filter_value: "0500"
+    current_filter_value: "050"
   };
 
   componentWillReceiveProps({ places }) {
@@ -47,7 +47,7 @@ class PlaceList extends Component {
                 this.filterCoffee(event.target.value);
               }}
             >
-              <option value="0500">所有餐厅</option>
+              <option value="050">所有餐厅</option>
               <option value="0501">中餐厅</option>
               <option value="0502">外国餐厅</option>
               <option value="0503">快餐厅</option>
