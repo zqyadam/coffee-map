@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import logo from "../coffee.png";
+import logo from "../food.svg";
 
 class Header extends Component {
   render() {
@@ -7,7 +7,7 @@ class Header extends Component {
       <div>
         <header className="app-header">
           <img src={logo} alt="logo" className="app-logo" />
-          <h1 className="app-title"> Coffee Map </h1>
+          <h1 className="app-title">吃货地图</h1>
         </header>
       </div>
     );

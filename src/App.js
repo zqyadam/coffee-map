@@ -25,18 +25,28 @@ class App extends Component {
   //   })
   // }
 
-   searchAround() {
-     let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(",")}&types=050000&radius=5000&offset=50&page=1&extensions=all`;
+   searchAround(page=1, pageNum = 25) {
+
+     let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(",")}&types=050000&radius=5000&offset=${pageNum}&page=${page}&extensions=all`;
     console.log(url)
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         console.log('search around');
         console.log(data)
+        // console.log(this.state.places.concat(data.pois));
         this.setState({
-          places: data.pois
-        })
+          places: this.combinePois(this.state.places, data.pois)
+        });
       })
+  }
+  // 合并新旧地点信息，避免ID重复
+  combinePois(oldPois, newPois){
+    let all = oldPois.concat(newPois);
+    let temp = [];
+    return all.filter((item) => {
+      return !temp.includes(item.id) && temp.push(item.id);
+    })
   }
 
   /*  getCenter(city = "沈阳") {
@@ -54,7 +64,11 @@ class App extends Component {
   } */
 
   componentDidMount() {
-    this.searchAround();
+    // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
+    this.searchAround(1,50);
+    this.searchAround(2,50);
+    this.searchAround(3,50);
+    this.searchAround(4,50);
   }
 
   successload() {
