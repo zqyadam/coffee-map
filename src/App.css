@@ -43,19 +43,34 @@ html, body{
 
 .place-list{
   height:100%;
-  width:300px;
-  padding:0 10px;
-  overflow-y: auto;
+  width:400px;
+}
+.place-select-container{
+  width:100%;
+  padding:10px;
+  box-sizing: border-box;
 }
 
 .place-select{
-  margin-top:10px;
+
+  width:100%;
+  border-radius: 5px;
+  height:30px;
+
+  font-size: 14px;
 }
 
+.place-item-list{
+  height:100%;
+  padding:0 10px;
+  overflow-y: auto;
+  height: calc(100% - 50px);
+}
 .place-item{
-  font-size: 14px;
+  font-size: 12px;
   border:1px solid #4b4b4b;
   margin-top:10px;
+  padding:5px;
 }
 
 .place-item:hover{

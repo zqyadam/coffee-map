@@ -26,7 +26,7 @@ class App extends Component {
   // }
 
    searchAround() {
-     let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(",")}&types=050500&radius=5000&offset=30&page=1&extensions=all`;
+     let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(",")}&types=050000&radius=5000&offset=50&page=1&extensions=all`;
     console.log(url)
     fetch(url)
       .then((response) => response.json())

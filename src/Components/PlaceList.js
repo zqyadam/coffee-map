@@ -43,32 +43,29 @@ class PlaceList extends Component {
   render() {
     let { places, filterd_places, current_filter_value } = this.state;
 
-    return (
-      <div className="place-list">
-        <div className="place-select">
-          {places.length === 0 ? (
-            "暂时啥也没有"
-          ) : (
-            <select
-              value={current_filter_value}
-              onChange={event => {
-                this.filterCoffee(event.target.value);
-              }}
-            >
-              <option value="all">所有</option>
-              <option value="050501">星巴克咖啡</option>
-              <option value="050502">上岛咖啡</option>
-              <option value="050503">太平洋咖啡</option>
-              <option value="050504">巴黎咖啡店</option>
-              <option value="050500">其他</option>
-            </select>
-          )}
+    return <div className="place-list">
+        {places.length === 0 ? <div>
+            暂时啥也没有
+          </div> :
+          <div className="place-select-container">
+            <select className="place-select" value={current_filter_value} onChange={event => {
+                  this.filterCoffee(event.target.value);
+                }}>
+                <option value="all">所有</option>
+                <option value="050501">星巴克咖啡</option>
+                <option value="050502">上岛咖啡</option>
+                <option value="050503">太平洋咖啡</option>
+                <option value="050504">巴黎咖啡店</option>
+                <option value="050500">其他</option>
+              </select>
+          </div>
+        }
+        <div className="place-item-list">
+          {filterd_places.map(place => (
+            <PlaceItem place={place} key={place.id} />
+          ))}
         </div>
-        {filterd_places.map(place => (
-          <PlaceItem place={place} key={place.id} />
-        ))}
-      </div>
-    );
+      </div>;
   }
 }
 
