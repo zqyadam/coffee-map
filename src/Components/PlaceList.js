@@ -3,24 +3,21 @@ import PlaceItem from "./PlaceItem";
 
 class PlaceList extends Component {
   state = {
-    filterd_places: [],
     places: [],
     current_filter_value: "050"
   };
 
   componentWillReceiveProps({ places }) {
-    console.log(places);
-    this.setState({ places: places, filterd_places: places });
+
+    this.setState({ places: places });
   }
 
-  handleSelectChange(e) {
-    this.setState({
-      current_filter_value: e.target.value
-    });
-    this.filterCoffee();
+  handleSelectChange(val) {
+    this.setState({ current_filter_value: val });
+    this.props.onFilter(val);
   }
 
-  filterCoffee(current_filter_value) {
+ /*  filterCoffee(current_filter_value) {
     let { places } = this.state;
 
     this.setState({
@@ -29,10 +26,11 @@ class PlaceList extends Component {
       ),
       current_filter_value
     })
-  }
+    this.props.onFilter(current)
+  } */
 
   render() {
-    let { places, filterd_places, current_filter_value } = this.state;
+    let { places, current_filter_value } = this.state;
 
     return (
       <div className="place-list">
@@ -44,7 +42,7 @@ class PlaceList extends Component {
               className="place-select"
               value={current_filter_value}
               onChange={event => {
-                this.filterCoffee(event.target.value);
+                this.handleSelectChange(event.target.value);
               }}
             >
               <option value="050">所有餐厅</option>
@@ -61,7 +59,7 @@ class PlaceList extends Component {
           </div>
         )}
         <div className="place-item-list">
-          {filterd_places.map(place => (
+          {places.map(place => (
             <PlaceItem place={place} key={place.id} />
           ))}
         </div>

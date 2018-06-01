@@ -9,18 +9,22 @@ class Map extends Component {
     markers:{}
   };
 
-  createMarker(pos, title, icon) {
-    let marker = new window.AMap.marker({
-      position: new window.AMap.LngLat(pos),
+  createMarker(pos, title) {
+    let marker = new window.AMap.Marker({
+      position: pos,
       title: title,
-      icon: icon
     });
     return marker;
   }
 
   createSimpleMarker(pos, label, style, title) {
     let simpleMarker = new this.state.SimpleMarker({
-      iconLabel: label,
+      iconLabel: {
+        innerHTML: label,
+        style:{
+          color: '#fff'
+        }
+      },
       iconStyle: style,
       map: this.state.map,
       position: pos,
@@ -29,13 +33,23 @@ class Map extends Component {
     return simpleMarker;
   }
   markMyPosition() {
-    this.createMarker(this.center, "我的位置");
+    this.createSimpleMarker(center, "这", "red", "我的位置");
+  }
+
+  makeMarkers(){
+    let {places} = this.props;
+    let markers = places.map((place) => {
+      return this.createMarker(place.location.split(','), place.name);
+    })
+    console.log(markers);
+    this.setState({ markers: markers });
+    this.state.map.add(markers);
   }
 
   initMap() {
     let map = new window.AMap.Map("map", {
       resizeEnable: true,
-      zoom: 16,
+      zoom: 18,
       center: center
     });
 
@@ -54,8 +68,8 @@ class Map extends Component {
         console.log(window.AMapUI);
         window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
           this.setState({ SimpleMarker });
-          this.createSimpleMarker(center, '这', 'red', '我的位置');
-          this
+          this.markMyPosition();
+          this.makeMarkers();
         });
       } else this.props.onError();
     }

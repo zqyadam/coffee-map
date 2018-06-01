@@ -13,7 +13,8 @@ class App extends Component {
   state = {
     center: [],
     adcode: "",
-    places: []
+    places: [],
+    filterd_places: []
   };
 
   // searchAroundByFourSqueare() {
@@ -36,9 +37,8 @@ class App extends Component {
         console.log("search around");
         console.log(data);
         // console.log(this.state.places.concat(data.pois));
-        this.setState({
-          places: this.combinePois(this.state.places, data.pois)
-        });
+        let allPlaces = this.combinePois(this.state.places, data.pois);
+        this.setState({ places: allPlaces, filterd_places: allPlaces });
       });
   }
   // 合并新旧地点信息，避免ID重复
@@ -64,6 +64,15 @@ class App extends Component {
       });
   } */
 
+  filterPlaces(current_filter_value) {
+    let { places } = this.state;
+    this.setState({
+      filterd_places: places.filter(place =>
+        place.typecode.startsWith(current_filter_value)
+      )
+    });
+  }
+
   componentDidMount() {
     // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
     this.searchAround(1, 50);
@@ -77,15 +86,13 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <div className="app">
+    return <div className="app">
         <Header />
         <main className="main">
-          <PlaceList places={this.state.places} />
-          <Map places={this.state.places} />
+          <PlaceList places={this.state.filterd_places} onFilter={(val)=>this.filterPlaces(val)} />
+          <Map places={this.state.filterd_places} />
         </main>
-      </div>
-    );
+      </div>;
   }
 }
 
