@@ -4,11 +4,10 @@ import "./App.css";
 import Map from "./Components/Map";
 import Header from "./Components/Header";
 import PlaceList from "./Components/PlaceList";
-import { fs_v, center, webServiceKey } from "./data";
+import { webServiceKey } from "./data";
 
-// const IP = "113.230.121.67"; // 铁岭
-const IP = "119.188.132.10";
-console.log(fs_v);
+
+
 // const webServiceKey = "d3f5ec8963493f40e86aaf99abfdba9d";
 
 class App extends Component {
@@ -16,7 +15,6 @@ class App extends Component {
     super(props);
     this.state = {
       enableFilter: false,
-      center: [],
       adcode: "",
       places: [],
       filterd_places: [],
@@ -45,6 +43,7 @@ class App extends Component {
     for (let index = 1; index <= times; index++) {
       this.searchAroundOnce(center, index, 50);
     }
+    this.setState({ enableFilter: true });
   }
 
   /**
@@ -81,49 +80,13 @@ class App extends Component {
     let all = oldPois.concat(newPois);
     let temp = [];
     return all.filter(item => {
+      if (!item.typecode.startsWith('050')) {
+        return false;
+      }
       return !temp.includes(item.id) && temp.push(item.id);
     });
   }
   //
-
-  /**
-   * 通过IP获取所在城市
-   *
-   * @param {*} IP IP地址
-   * @memberof App
-   */
-  getCityByIP(IP) {
-    let url = `https://restapi.amap.com/v3/ip?key=${webServiceKey}&ip=${IP}`; //&ip=${IP}
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        let city = data.city;
-        this.getCityCenter(city);
-      });
-  }
-
-  /**
-   * 通过城市名称获取城市中心坐标
-   *
-   * @param {*} city 城市名称
-   * @memberof App
-   */
-  getCityCenter(city) {
-    // 获取城市中心
-    fetch(
-      `http://restapi.amap.com/v3/config/district?keywords=${city}&key=${webServiceKey}&subdistrict=0&extensions=base`
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        let center = data.districts[0].center.split(",");
-        console.log("city center:", center);
-        this.setState({ center: center });
-        // 搜索中心坐标附近餐厅
-        this.searchAround(center, 8, 50);
-      });
-  }
 
   /**
    * 根据选择的值过滤餐厅地点
@@ -141,8 +104,9 @@ class App extends Component {
     });
   }
   // 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
-  handleMapInited(isInited) {
-    this.setState({ enableFilter: isInited });
+  handleMapInited(center) {
+    this.searchAround(center, 8, 50);
+
   }
 
   handleClick(id) {
@@ -154,7 +118,6 @@ class App extends Component {
 
   componentDidMount() {
     // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
-    this.getCityByIP(IP);
   }
 
   render() {
@@ -170,12 +133,9 @@ class App extends Component {
             onClick={id => this.handleClick(id)}
           />
           <Map
-            center={this.state.center}
             places={this.state.filterd_places}
-            isScriptLoaded={isScriptLoaded}
-            isScriptLoadSucceed={isScriptLoadSucceed}
-            onMapInited={isInited => {
-              this.handleMapInited(isInited);
+            onMapInited={(center) => {
+              this.handleMapInited(center);
             }}
             clickedPlace={this.state.clickedPlaceId}
           />

@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import scriptLoader from "react-async-script-loader";
-import { jskey } from "../data";
+import { jskey, webServiceKey, defaultCenter } from "../data";
+
+
+// const IP = "113.230.121.67"; // 铁岭
+const IP = "119.188.132.10"; // 济南
 // console.log(center);
 class Map extends Component {
   constructor(props) {
@@ -9,7 +13,8 @@ class Map extends Component {
       map: null,
       SimpleMarker: null,
       markers: {},
-      infoWindow: null
+      infoWindow: null,
+      center: []
     };
   }
 
@@ -40,7 +45,7 @@ class Map extends Component {
 
   createSimpleMarker(pos, label, style, title) {
     let simpleMarker = new this.state.SimpleMarker({
-      draggable:false, // 可拖动，后续用来更改所在位置，展示先不需要该功能
+      draggable: false, // 可拖动，后续用来更改所在位置，展示先不需要该功能
       iconLabel: {
         innerHTML: label,
         style: {
@@ -53,15 +58,15 @@ class Map extends Component {
       title: title
     });
 
-    simpleMarker.on("dragend",(event) => {
-      console.log(event)
+    simpleMarker.on("dragend", event => {
+      console.log(event);
     });
 
     return simpleMarker;
   }
   // 标记当前中心位置
   markCenter() {
-    let center = this.props.center;
+    let center = this.state.center;
     this.setState({
       myPosMarker: this.createSimpleMarker(center, "这", "red", "我的位置")
     });
@@ -77,9 +82,59 @@ class Map extends Component {
   }
 
   createMarkers(places) {
-    this.state.map.remove(Object.values(this.state.markers));
+    this.cleanMarkers();
     this.makeMarkers(places);
     this.state.map.setFitView();
+  }
+
+  cleanMarkers() {
+    if (this.state.map) {
+      this.state.map.remove(Object.values(this.state.markers));
+    }
+  }
+
+  /**
+   * 通过IP获取所在城市
+   *
+   * @param {*} IP IP地址
+   * @memberof App
+   */
+  getCityByIP(IP) {
+    const IP_str = (IP)?`&ip=${IP}`: ''
+    let url = `https://restapi.amap.com/v3/ip?key=${webServiceKey}${IP_str}`;
+    console.log(url)
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        let city = data.city;
+        this.getCityCenter(city);
+      });
+  }
+
+  /**
+   * 通过城市名称获取城市中心坐标
+   *
+   * @param {*} city 城市名称
+   * @memberof App
+   */
+  getCityCenter(city) {
+    // 获取城市中心
+    fetch(
+      `http://restapi.amap.com/v3/config/district?keywords=${city}&key=${webServiceKey}&subdistrict=0&extensions=base`
+    )
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        let center = data.districts[0].center.split(",");
+        console.log("city center:", center);
+        this.setState({ center: center });
+        this.initMap(center);
+        // 搜索中心坐标附近餐厅
+        // this.searchAround(center, 8, 50);
+      }).catch((err) => {
+        console.log(defaultCenter)
+      });
   }
 
   initMap(center) {
@@ -88,6 +143,10 @@ class Map extends Component {
       zoom: 18,
       center: center
     });
+    this.setState({
+      map
+    })
+    this.props.onMapInited(center);
 
     let infoWindow = new window.AMap.InfoWindow({
       offset: new window.AMap.Pixel(0, -20)
@@ -96,7 +155,8 @@ class Map extends Component {
     window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
       this.setState({ SimpleMarker, infoWindow, map });
       this.markCenter();
-      this.props.onMapInited(true);
+      this.state.map.setFitView();
+
     });
   }
 
@@ -104,24 +164,20 @@ class Map extends Component {
     isScriptLoaded,
     isScriptLoadSucceed,
     places,
-    clickedPlace,
-    center
+    clickedPlace
   }) {
     if (isScriptLoaded && !this.props.isScriptLoaded) {
       // load finished
       if (isScriptLoadSucceed) {
         // 初始化地图
-        this.initMap(center);
+        console.log("init in props");
+        this.getCityByIP(IP);
       } else this.props.onError();
     }
     // 每次收到新的props时，需要进行的动作
     if (this.state.map) {
-      // 中心点变化
-      if (center.join(",") !== this.props.center.join(",")) {
-        this.state.map.setCenter(center);
-        this.state.myPosMarker.setPosition(center);
-      }
-
+      console.log('map inited');
+      // debugger
       // 关闭当前显示的InfoWindow
       if (this.state.infoWindow) {
         this.state.infoWindow.close();
@@ -139,7 +195,7 @@ class Map extends Component {
 
   componentDidMount() {
     console.log("component did mount");
-    const { isScriptLoaded, isScriptLoadSucceed } = this.props;
+    const { isScriptLoaded, isScriptLoadSucceed, center } = this.props;
     if (isScriptLoaded && isScriptLoadSucceed) {
     }
   }
@@ -149,7 +205,6 @@ class Map extends Component {
 }
 
 export default scriptLoader(
-  `//webapi.amap.com/maps?v=1.4.6&key=${jskey}`,
-  "//webapi.amap.com/ui/1.0/main.js"
+  `//webapi.amap.com/maps?v=1.4.7&key=${jskey}`,
+  `//webapi.amap.com/ui/1.0/main.js`
 )(Map);
-
