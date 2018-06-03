@@ -44,11 +44,13 @@ html, body{
 .place-list{
   height:100%;
   width:400px;
+  border-right:1px solid #4b4b4b;
 }
 .place-select-container{
   width:100%;
   padding:10px 10px 0 10px;
   box-sizing: border-box;
+  border-bottom:1px solid #4b4b4b;
 }
 
 
@@ -57,11 +59,10 @@ html, body{
   padding: 5px;
 }
 .place-select{
-
+  border:1px solid #4b4b4b;
   width:100%;
   border-radius: 5px;
   height:30px;
-
   font-size: 14px;
 }
 
@@ -75,7 +76,13 @@ html, body{
   font-size: 12px;
   border:1px solid #4b4b4b;
   margin-top:10px;
-  padding:5px;
+  padding:5px 10px;
+  box-shadow: 1px 2px 5px #888888;
+  border-radius: 3px;
+}
+
+.place-item p{
+  margin:10px 0;
 }
 
 .place-item:hover{
