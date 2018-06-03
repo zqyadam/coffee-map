@@ -3,16 +3,19 @@ import scriptLoader from "react-async-script-loader";
 import { jskey, center } from "../data";
 console.log(center);
 class Map extends Component {
-  state = {
-    map: null,
-    SimpleMarker: null,
-    markers:{}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      map: null,
+      SimpleMarker: null,
+      markers: []
+    };
+  }
 
   createMarker(pos, title) {
     let marker = new window.AMap.Marker({
       position: pos,
-      title: title,
+      title: title
     });
     return marker;
   }
@@ -21,8 +24,8 @@ class Map extends Component {
     let simpleMarker = new this.state.SimpleMarker({
       iconLabel: {
         innerHTML: label,
-        style:{
-          color: '#fff'
+        style: {
+          color: "#fff"
         }
       },
       iconStyle: style,
@@ -36,12 +39,10 @@ class Map extends Component {
     this.createSimpleMarker(center, "这", "red", "我的位置");
   }
 
-  makeMarkers(){
-    let {places} = this.props;
-    let markers = places.map((place) => {
-      return this.createMarker(place.location.split(','), place.name);
-    })
-    console.log(markers);
+  makeMarkers(places) {
+    let markers = places.map(place => {
+      return this.createMarker(place.location.split(","), place.name);
+    });
     this.setState({ markers: markers });
     this.state.map.add(markers);
   }
@@ -58,37 +59,47 @@ class Map extends Component {
     });
   }
 
-  componentWillReceiveProps({ isScriptLoaded, isScriptLoadSucceed }) {
-    console.log("receiving props", this.props);
+  reloadMarkers(places) {
+    this.state.map.remove(this.state.markers);
+    this.makeMarkers(places);
+  }
+  componentWillReceiveProps({ isScriptLoaded, isScriptLoadSucceed, places }) {
     if (isScriptLoaded && !this.props.isScriptLoaded) {
       // load finished
       if (isScriptLoadSucceed) {
-        console.log("success loaded:", this.props);
         this.initMap();
-        console.log(window.AMapUI);
+
         window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
           this.setState({ SimpleMarker });
           this.markMyPosition();
-          this.makeMarkers();
+          console.log(places)
+          this.reloadMarkers(places);
         });
       } else this.props.onError();
+    }
+
+    if (this.state.map) {
+      console.log('places change')
+      console.log(places);
+      this.reloadMarkers(places);
     }
   }
 
   componentDidMount() {
     console.log("component did mount");
     const { isScriptLoaded, isScriptLoadSucceed } = this.props;
-    console.log(isScriptLoaded);
+    console.log("did mount", this.props);
     if (isScriptLoaded && isScriptLoadSucceed) {
+
     }
   }
-
   render() {
     return <div className="map-container" id="map" />;
   }
 }
-console.log(`//webapi.amap.com/maps?v=1.4.6&key=${jskey}`);
+
 export default scriptLoader(
   `//webapi.amap.com/maps?v=1.4.6&key=${jskey}`,
   "//webapi.amap.com/ui/1.0/main.js"
 )(Map);
+

@@ -4,18 +4,25 @@ import "./App.css";
 import Map from "./Components/Map";
 import Header from "./Components/Header";
 import PlaceList from "./Components/PlaceList";
-import { client_id, client_secret, fs_v, center, webServiceKey } from "./data";
+import {
+  fs_v,
+  center,
+  webServiceKey
+} from "./data";
 
 console.log(fs_v);
 // const webServiceKey = "d3f5ec8963493f40e86aaf99abfdba9d";
 
 class App extends Component {
-  state = {
-    center: [],
-    adcode: "",
-    places: [],
-    filterd_places: []
-  };
+  constructor(props) {
+    super(props)
+    this.state = {
+      center: [],
+      adcode: "",
+      places: [],
+      filterd_places: []
+    };
+  }
 
   // searchAroundByFourSqueare() {
   //   const url = `https://api.foursquare.com/v2/venues/search?ll=${[center[1], center[0]]}&radius=2000&query=咖啡&client_secret=${client_secret}&client_id=${client_id}&v=${fs_v}`;
@@ -34,9 +41,6 @@ class App extends Component {
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        console.log("search around");
-        console.log(data);
-        // console.log(this.state.places.concat(data.pois));
         let allPlaces = this.combinePois(this.state.places, data.pois);
         this.setState({ places: allPlaces, filterd_places: allPlaces });
       });
@@ -86,13 +90,23 @@ class App extends Component {
   }
 
   render() {
-    return <div className="app">
+    let { isScriptLoaded, isScriptLoadSucceed } = this.props;
+    return (
+      <div className="app">
         <Header />
         <main className="main">
-          <PlaceList places={this.state.filterd_places} onFilter={(val)=>this.filterPlaces(val)} />
-          <Map places={this.state.filterd_places} />
+          <PlaceList
+            places={this.state.filterd_places}
+            onFilter={val => this.filterPlaces(val)}
+          />
+          <Map
+            places={this.state.filterd_places}
+            isScriptLoaded={isScriptLoaded}
+            isScriptLoadSucceed={isScriptLoadSucceed}
+          />
         </main>
-      </div>;
+      </div>
+    );
   }
 }
 
