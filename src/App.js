@@ -121,7 +121,6 @@ class App extends Component {
   }
 
   render() {
-    let { isScriptLoaded, isScriptLoadSucceed } = this.props;
     return (
       <div className="app">
         <Header />

@@ -195,7 +195,7 @@ class Map extends Component {
 
   componentDidMount() {
     console.log("component did mount");
-    const { isScriptLoaded, isScriptLoadSucceed, center } = this.props;
+    const { isScriptLoaded, isScriptLoadSucceed } = this.props;
     if (isScriptLoaded && isScriptLoadSucceed) {
     }
   }
