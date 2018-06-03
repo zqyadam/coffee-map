@@ -38,9 +38,9 @@ class Map extends Component {
         <p>距离：${marker.place.distance}米</p>
       </div >`;
     infoWindow.setContent(content);
-    // 将选择的地点设置为地图中心
-    // map.setCenter(marker.getPosition());
     infoWindow.open(map, marker.getPosition());
+    // 将选择的地点设置为地图中心
+    map.setCenter(marker.getPosition());
   }
 
   createSimpleMarker(pos, label, style, title) {
