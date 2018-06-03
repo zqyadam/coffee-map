@@ -13,14 +13,16 @@ class PlaceItem extends Component {
     return "地址：" + address;
   }
 
+  handleClick(){
+    this.props.onClick(this.props.place.id);
+  }
+
   render() {
     let place = this.props.place;
     return (
-      <div className="place-item">
+      <div className="place-item" onClick={()=>this.handleClick()}>
         <p>名称：{place.name}</p>
         <p>{this.getAddress(place)}</p>
-
-        {/* {place.tel.length ? <p>联系电话：{place.tel}</p> : ""} */}
         <p>距离：{place.distance}米</p>
       </div>
     );

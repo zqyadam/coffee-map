@@ -8,7 +8,6 @@ class PlaceList extends Component {
   };
 
   componentWillReceiveProps({ places }) {
-
     this.setState({ places: places });
   }
 
@@ -17,25 +16,15 @@ class PlaceList extends Component {
     this.props.onFilter(val);
   }
 
- /*  filterCoffee(current_filter_value) {
-    let { places } = this.state;
-
-    this.setState({
-      filterd_places: places.filter(
-        place => place.typecode.startsWith(current_filter_value)
-      ),
-      current_filter_value
-    })
-    this.props.onFilter(current)
-  } */
-
   render() {
     let { places, current_filter_value } = this.state;
 
     return (
       <div className="place-list">
         {places.length === 0 ? (
-          <div>暂时啥也没有</div>
+          <div>
+            <p className="place-loading">正在加载中,请稍后...</p>
+          </div>
         ) : (
           <div className="place-select-container">
             <select
@@ -44,6 +33,7 @@ class PlaceList extends Component {
               onChange={event => {
                 this.handleSelectChange(event.target.value);
               }}
+              disabled={!this.props.enable}
             >
               <option value="050">所有餐厅</option>
               <option value="0501">中餐厅</option>
@@ -56,11 +46,16 @@ class PlaceList extends Component {
               <option value="0508">糕饼店</option>
               <option value="0509">甜品店</option>
             </select>
+            <div className="place-list-num">餐厅数量：{places.length}</div>
           </div>
         )}
         <div className="place-item-list">
           {places.map(place => (
-            <PlaceItem place={place} key={place.id} />
+            <PlaceItem
+              place={place}
+              key={place.id}
+              onClick={id => this.props.onClick(id)}
+            />
           ))}
         </div>
       </div>
@@ -68,4 +63,9 @@ class PlaceList extends Component {
   }
 }
 
+PlaceList.defaultProps = {
+  enable: false
+}
+
 export default PlaceList;
+

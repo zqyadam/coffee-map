@@ -8,16 +8,32 @@ class Map extends Component {
     this.state = {
       map: null,
       SimpleMarker: null,
-      markers: []
+      markers: {},
+      infoWindow: null
     };
   }
 
-  createMarker(pos, title) {
+  createMarker(place) {
     let marker = new window.AMap.Marker({
-      position: pos,
-      title: title
+      position: place.location.split(","),
+      title: place.name
+    });
+    marker.place = place;
+    let {infoWindow, map} = this.state
+    marker.on("click", event => {
+      this.popupInfoWindow(marker, infoWindow, map);
     });
     return marker;
+  }
+
+  popupInfoWindow(marker, infoWindow, map) {
+    let content = `<div className="place-item">
+        <p> 名称：${marker.place.name}</p >
+        <p>地址：${marker.place.address}</p>
+        <p>距离：${marker.place.distance}米</p>
+      </div >`;
+    infoWindow.setContent(content);
+    infoWindow.open(map, marker.getPosition());
   }
 
   createSimpleMarker(pos, label, style, title) {
@@ -40,11 +56,12 @@ class Map extends Component {
   }
 
   makeMarkers(places) {
-    let markers = places.map(place => {
-      return this.createMarker(place.location.split(","), place.name);
+    let m = {};
+    places.forEach(place => {
+      m[place.id] = this.createMarker(place);
     });
-    this.setState({ markers: markers });
-    this.state.map.add(markers);
+    this.setState({ markers: m });
+    this.state.map.add(Object.values(m));
   }
 
   initMap() {
@@ -59,38 +76,49 @@ class Map extends Component {
     });
   }
 
-  reloadMarkers(places) {
-    this.state.map.remove(this.state.markers);
+  createMarkers(places) {
+    this.state.map.remove(Object.values(this.state.markers));
     this.makeMarkers(places);
+    this.state.map.setFitView();
   }
-  componentWillReceiveProps({ isScriptLoaded, isScriptLoadSucceed, places }) {
+  componentWillReceiveProps({
+    isScriptLoaded,
+    isScriptLoadSucceed,
+    places,
+    clickedPlace
+  }) {
     if (isScriptLoaded && !this.props.isScriptLoaded) {
       // load finished
       if (isScriptLoadSucceed) {
         this.initMap();
-
+        let infoWindow = new window.AMap.InfoWindow({
+          offset: new window.AMap.Pixel(0, -20)
+        });
         window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
-          this.setState({ SimpleMarker });
+          this.setState({ SimpleMarker, infoWindow });
           this.markMyPosition();
-          console.log(places)
-          this.reloadMarkers(places);
+          this.props.onMapInited(true);
         });
       } else this.props.onError();
     }
 
     if (this.state.map) {
-      console.log('places change')
-      console.log(places);
-      this.reloadMarkers(places);
+      // 刷新地图的marker
+      this.createMarkers(places);
+      // 如果点击了PlaceList中的地点，则显示infoWindow
+      if (clickedPlace) {
+        console.log(clickedPlace);
+        let { markers, infoWindow, map } = this.state;
+        let marker = markers[clickedPlace];
+        this.popupInfoWindow(marker, infoWindow, map);
+      }
     }
   }
 
   componentDidMount() {
     console.log("component did mount");
     const { isScriptLoaded, isScriptLoadSucceed } = this.props;
-    console.log("did mount", this.props);
     if (isScriptLoaded && isScriptLoadSucceed) {
-
     }
   }
   render() {

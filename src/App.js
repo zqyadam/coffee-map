@@ -4,23 +4,21 @@ import "./App.css";
 import Map from "./Components/Map";
 import Header from "./Components/Header";
 import PlaceList from "./Components/PlaceList";
-import {
-  fs_v,
-  center,
-  webServiceKey
-} from "./data";
+import { fs_v, center, webServiceKey } from "./data";
 
 console.log(fs_v);
 // const webServiceKey = "d3f5ec8963493f40e86aaf99abfdba9d";
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
+      enableFilter: false,
       center: [],
       adcode: "",
       places: [],
-      filterd_places: []
+      filterd_places: [],
+      clickedPlaceId: ''
     };
   }
 
@@ -73,8 +71,20 @@ class App extends Component {
     this.setState({
       filterd_places: places.filter(place =>
         place.typecode.startsWith(current_filter_value)
-      )
+      ),
+      clickedPlaceId:''
     });
+  }
+
+  handleMapInited(isInited) {
+    this.setState({ enableFilter: isInited });
+  }
+
+  handleClick(id){
+    console.log('place item clicked',id)
+    this.setState({
+      clickedPlaceId: id
+    })
   }
 
   componentDidMount() {
@@ -83,11 +93,12 @@ class App extends Component {
     this.searchAround(2, 50);
     this.searchAround(3, 50);
     this.searchAround(4, 50);
+    /* this.searchAround(5, 50);
+    this.searchAround(6, 50);
+    this.searchAround(7, 50);
+    this.searchAround(8, 50); */
   }
 
-  successload() {
-    console.log("App:script loaded success ");
-  }
 
   render() {
     let { isScriptLoaded, isScriptLoadSucceed } = this.props;
@@ -98,11 +109,17 @@ class App extends Component {
           <PlaceList
             places={this.state.filterd_places}
             onFilter={val => this.filterPlaces(val)}
+            enable={this.state.enableFilter}
+            onClick={id => this.handleClick(id)}
           />
           <Map
             places={this.state.filterd_places}
             isScriptLoaded={isScriptLoaded}
             isScriptLoadSucceed={isScriptLoadSucceed}
+            onMapInited={isInited => {
+              this.handleMapInited(isInited);
+            }}
+            clickedPlace={this.state.clickedPlaceId}
           />
         </main>
       </div>

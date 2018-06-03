@@ -47,10 +47,18 @@ html, body{
 }
 .place-select-container{
   width:100%;
-  padding:10px;
+  padding:10px 10px 0 10px;
   box-sizing: border-box;
 }
+.place-loading{
+  text-align: center;
+  padding: 10px;
+}
 
+.place-list-num{
+  font-size: 14px;
+  padding: 5px;
+}
 .place-select{
 
   width:100%;

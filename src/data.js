@@ -9,4 +9,8 @@ let d = new Date();
 const year = d.getFullYear();
 const month = d.getMonth() + 1;
 const day = d.getDate();
-export const fs_v = year + (month < 10 ? "0" + month : month) + day;
+export const fs_v = year + addZero(month) + addZero(day);
+
+function addZero(num) {
+ return num < 10 ? "0" + num : num;
+}
