@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import scriptLoader from "react-async-script-loader";
-import { jskey, center } from "../data";
-console.log(center);
+import { jskey } from "../data";
+// console.log(center);
 class Map extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +19,7 @@ class Map extends Component {
       title: place.name
     });
     marker.place = place;
-    let {infoWindow, map} = this.state
+    let { infoWindow, map } = this.state;
     marker.on("click", event => {
       this.popupInfoWindow(marker, infoWindow, map);
     });
@@ -40,6 +40,7 @@ class Map extends Component {
 
   createSimpleMarker(pos, label, style, title) {
     let simpleMarker = new this.state.SimpleMarker({
+      draggable:true,
       iconLabel: {
         innerHTML: label,
         style: {
@@ -51,10 +52,19 @@ class Map extends Component {
       position: pos,
       title: title
     });
+
+    simpleMarker.on("dragend",(event) => {
+      console.log(event)
+    });
+
     return simpleMarker;
   }
-  markMyPosition() {
-    this.createSimpleMarker(center, "这", "red", "我的位置");
+  // 标记当前中心位置
+  markCenter() {
+    let center = this.props.center;
+    this.setState({
+      myPosMarker: this.createSimpleMarker(center, "这", "red", "我的位置")
+    });
   }
 
   makeMarkers(places) {
@@ -66,7 +76,13 @@ class Map extends Component {
     this.state.map.add(Object.values(m));
   }
 
-  initMap() {
+  createMarkers(places) {
+    this.state.map.remove(Object.values(this.state.markers));
+    this.makeMarkers(places);
+    this.state.map.setFitView();
+  }
+
+  initMap(center) {
     let map = new window.AMap.Map("map", {
       resizeEnable: true,
       zoom: 18,
@@ -79,32 +95,32 @@ class Map extends Component {
 
     window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
       this.setState({ SimpleMarker, infoWindow, map });
-      this.markMyPosition();
+      this.markCenter();
       this.props.onMapInited(true);
     });
-
   }
 
-  createMarkers(places) {
-    this.state.map.remove(Object.values(this.state.markers));
-    this.makeMarkers(places);
-    this.state.map.setFitView();
-  }
   componentWillReceiveProps({
     isScriptLoaded,
     isScriptLoadSucceed,
     places,
-    clickedPlace
+    clickedPlace,
+    center
   }) {
     if (isScriptLoaded && !this.props.isScriptLoaded) {
       // load finished
       if (isScriptLoadSucceed) {
-        this.initMap();
-
+        this.initMap(center);
       } else this.props.onError();
     }
 
     if (this.state.map) {
+      // 中心点变化
+      if (center.join(",") !== this.props.center.join(",")) {
+        this.state.map.setCenter(center);
+        this.state.myPosMarker.setPosition(center);
+      }
+
       // 关闭当前显示的InfoWindow
       if (this.state.infoWindow) {
         this.state.infoWindow.close();
