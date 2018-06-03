@@ -33,12 +33,28 @@ class App extends Component {
   //   })
   // }
 
+  /**
+   * 搜索中心点周边的餐厅
+   *
+   * @param {*} center 中心点坐标
+   * @param {*} times 搜索次数
+   * @param {number} [pageNum=25] 每页数量
+   * @memberof App
+   */
   searchAround(center, times, pageNum = 25) {
     for (let index = 1; index <= times; index++) {
       this.searchAroundOnce(center, index, 50);
     }
   }
 
+  /**
+   * 向服务器发起一次搜索请求
+   *
+   * @param {*} center 中心点坐标
+   * @param {number} [page=1] 当前第几页
+   * @param {number} [pageNum=25] 每页数量
+   * @memberof App
+   */
   searchAroundOnce(center, page = 1, pageNum = 25) {
     // let center = this.state.center;
     let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(
@@ -52,7 +68,15 @@ class App extends Component {
         this.setState({ places: allPlaces, filterd_places: allPlaces });
       });
   }
-  // 合并新旧地点信息，避免ID重复
+
+  /**
+   * 合并新旧地点信息，避免ID重复
+   *
+   * @param {*} oldPois 现有的Pois
+   * @param {*} newPois 新增的Pois
+   * @returns
+   * @memberof App
+   */
   combinePois(oldPois, newPois) {
     let all = oldPois.concat(newPois);
     let temp = [];
@@ -60,8 +84,15 @@ class App extends Component {
       return !temp.includes(item.id) && temp.push(item.id);
     });
   }
-  // 通过IP获取所在城市
-  getCityByIP() {
+  //
+
+  /**
+   * 通过IP获取所在城市
+   *
+   * @param {*} IP IP地址
+   * @memberof App
+   */
+  getCityByIP(IP) {
     let url = `https://restapi.amap.com/v3/ip?key=${webServiceKey}&ip=${IP}`; //&ip=${IP}
     fetch(url)
       .then(res => res.json())
@@ -70,8 +101,14 @@ class App extends Component {
         this.getCityCenter(city);
       });
   }
-  // 通过城市名称获取城市中心坐标
-  getCityCenter(city = "沈阳") {
+
+  /**
+   * 通过城市名称获取城市中心坐标
+   *
+   * @param {*} city 城市名称
+   * @memberof App
+   */
+  getCityCenter(city) {
     // 获取城市中心
     fetch(
       `http://restapi.amap.com/v3/config/district?keywords=${city}&key=${webServiceKey}&subdistrict=0&extensions=base`
@@ -87,7 +124,13 @@ class App extends Component {
         this.searchAround(center, 8, 50);
       });
   }
-  // 根据选择的值过滤餐厅地点
+
+  /**
+   * 根据选择的值过滤餐厅地点
+   *
+   * @param {*} current_filter_value 需要过滤的值
+   * @memberof App
+   */
   filterPlaces(current_filter_value) {
     let { places } = this.state;
     this.setState({
@@ -111,7 +154,7 @@ class App extends Component {
 
   componentDidMount() {
     // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
-    this.getCityByIP();
+    this.getCityByIP(IP);
   }
 
   render() {

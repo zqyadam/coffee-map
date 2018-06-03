@@ -40,7 +40,7 @@ class Map extends Component {
 
   createSimpleMarker(pos, label, style, title) {
     let simpleMarker = new this.state.SimpleMarker({
-      draggable:true,
+      draggable:false, // 可拖动，后续用来更改所在位置，展示先不需要该功能
       iconLabel: {
         innerHTML: label,
         style: {
@@ -110,10 +110,11 @@ class Map extends Component {
     if (isScriptLoaded && !this.props.isScriptLoaded) {
       // load finished
       if (isScriptLoadSucceed) {
+        // 初始化地图
         this.initMap(center);
       } else this.props.onError();
     }
-
+    // 每次收到新的props时，需要进行的动作
     if (this.state.map) {
       // 中心点变化
       if (center.join(",") !== this.props.center.join(",")) {
