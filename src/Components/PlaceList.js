@@ -21,11 +21,6 @@ class PlaceList extends Component {
 
     return (
       <div className="place-list">
-        {places.length === 0 ? (
-          <div>
-            <p className="place-loading">正在加载中,请稍后...</p>
-          </div>
-        ) : (
           <div className="place-select-container">
             <select
               className="place-select"
@@ -48,7 +43,6 @@ class PlaceList extends Component {
             </select>
             <div className="place-list-num">餐厅数量：{places.length}</div>
           </div>
-        )}
         <div className="place-item-list">
           {places.map(place => (
             <PlaceItem

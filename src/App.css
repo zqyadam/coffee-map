@@ -50,10 +50,7 @@ html, body{
   padding:10px 10px 0 10px;
   box-sizing: border-box;
 }
-.place-loading{
-  text-align: center;
-  padding: 10px;
-}
+
 
 .place-list-num{
   font-size: 14px;

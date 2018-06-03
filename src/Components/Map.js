@@ -33,6 +33,8 @@ class Map extends Component {
         <p>距离：${marker.place.distance}米</p>
       </div >`;
     infoWindow.setContent(content);
+    // 将选择的地点设置为地图中心
+    // map.setCenter(marker.getPosition());
     infoWindow.open(map, marker.getPosition());
   }
 
@@ -71,9 +73,16 @@ class Map extends Component {
       center: center
     });
 
-    this.setState({
-      map: map
+    let infoWindow = new window.AMap.InfoWindow({
+      offset: new window.AMap.Pixel(0, -20)
     });
+
+    window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
+      this.setState({ SimpleMarker, infoWindow, map });
+      this.markMyPosition();
+      this.props.onMapInited(true);
+    });
+
   }
 
   createMarkers(places) {
@@ -91,23 +100,19 @@ class Map extends Component {
       // load finished
       if (isScriptLoadSucceed) {
         this.initMap();
-        let infoWindow = new window.AMap.InfoWindow({
-          offset: new window.AMap.Pixel(0, -20)
-        });
-        window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
-          this.setState({ SimpleMarker, infoWindow });
-          this.markMyPosition();
-          this.props.onMapInited(true);
-        });
+
       } else this.props.onError();
     }
 
     if (this.state.map) {
+      // 关闭当前显示的InfoWindow
+      if (this.state.infoWindow) {
+        this.state.infoWindow.close();
+      }
       // 刷新地图的marker
       this.createMarkers(places);
       // 如果点击了PlaceList中的地点，则显示infoWindow
       if (clickedPlace) {
-        console.log(clickedPlace);
         let { markers, infoWindow, map } = this.state;
         let marker = markers[clickedPlace];
         this.popupInfoWindow(marker, infoWindow, map);
