@@ -211,7 +211,7 @@ class Map extends Component {
       if (isScriptLoadSucceed) {
         // 初始化地图
         console.log("init in props");
-        this.getCityByIP(IP);
+        this.getCityByIP();
       } else this.props.onError();
     }
     // 每次收到新的props时，需要进行的动作
