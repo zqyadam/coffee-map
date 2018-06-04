@@ -57,6 +57,8 @@ html, body{
 .place-list-num{
   font-size: 14px;
   padding: 5px;
+  height:19px;
+  line-height: 19px;
 }
 .place-select{
   border:1px solid #4b4b4b;
@@ -70,7 +72,7 @@ html, body{
   height:100%;
   padding:0 10px;
   overflow-y: auto;
-  height: calc(100% - 50px);
+  height: calc(100% - 70px);
 }
 .place-item{
   font-size: 12px;
