@@ -6,10 +6,6 @@ import Header from "./Components/Header";
 import PlaceList from "./Components/PlaceList";
 import { webServiceKey } from "./data";
 
-
-
-// const webServiceKey = "d3f5ec8963493f40e86aaf99abfdba9d";
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -18,7 +14,7 @@ class App extends Component {
       adcode: "",
       places: [],
       filterd_places: [],
-      clickedPlaceId: ""
+      clickedPlaceId: "",
     };
   }
 
@@ -34,8 +30,8 @@ class App extends Component {
   /**
    * 搜索中心点周边的餐厅
    *
-   * @param {*} center 中心点坐标
-   * @param {*} times 搜索次数
+   * @param {array} center 中心点坐标
+   * @param {number} times 搜索次数
    * @param {number} [pageNum=25] 每页数量
    * @memberof App
    */
@@ -49,7 +45,7 @@ class App extends Component {
   /**
    * 向服务器发起一次搜索请求
    *
-   * @param {*} center 中心点坐标
+   * @param {string} center 中心点坐标
    * @param {number} [page=1] 当前第几页
    * @param {number} [pageNum=25] 每页数量
    * @memberof App
@@ -71,8 +67,8 @@ class App extends Component {
   /**
    * 合并新旧地点信息，避免ID重复
    *
-   * @param {*} oldPois 现有的Pois
-   * @param {*} newPois 新增的Pois
+   * @param {array} oldPois 现有的Pois
+   * @param {array} newPois 新增的Pois
    * @returns
    * @memberof App
    */
@@ -80,7 +76,7 @@ class App extends Component {
     let all = oldPois.concat(newPois);
     let temp = [];
     return all.filter(item => {
-      if (!item.typecode.startsWith('050')) {
+      if (!item.typecode.startsWith("050")) {
         return false;
       }
       return !temp.includes(item.id) && temp.push(item.id);
@@ -91,7 +87,7 @@ class App extends Component {
   /**
    * 根据选择的值过滤餐厅地点
    *
-   * @param {*} current_filter_value 需要过滤的值
+   * @param {string} current_filter_value 需要过滤的值
    * @memberof App
    */
   filterPlaces(current_filter_value) {
@@ -100,13 +96,13 @@ class App extends Component {
       filterd_places: places.filter(place =>
         place.typecode.startsWith(current_filter_value)
       ),
-      clickedPlaceId: ""
+      clickedPlaceId: "",
+      current_filter_value: current_filter_value
     });
   }
   // 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
   handleMapInited(center) {
     this.searchAround(center, 8, 50);
-
   }
 
   handleClick(id) {
@@ -133,7 +129,7 @@ class App extends Component {
           />
           <Map
             places={this.state.filterd_places}
-            onMapInited={(center) => {
+            onMapInited={center => {
               this.handleMapInited(center);
             }}
             clickedPlace={this.state.clickedPlaceId}

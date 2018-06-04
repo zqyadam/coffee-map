@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import scriptLoader from "react-async-script-loader";
 import { jskey, webServiceKey, defaultCenter } from "../data";
 
-
 // const IP = "113.230.121.67"; // 铁岭
 const IP = "119.188.132.10"; // 济南
 // console.log(center);
@@ -18,6 +17,13 @@ class Map extends Component {
     };
   }
 
+  /**
+   * 创建一个标记
+   *
+   * @param {object} place
+   * @returns
+   * @memberof Map
+   */
   createMarker(place) {
     let marker = new window.AMap.Marker({
       position: place.location.split(","),
@@ -30,7 +36,14 @@ class Map extends Component {
     });
     return marker;
   }
-
+  /**
+   * 打开信息窗口
+   *
+   * @param {object} marker
+   * @param {object} infoWindow
+   * @param {object} map
+   * @memberof Map
+   */
   popupInfoWindow(marker, infoWindow, map) {
     let content = `<div className="place-item">
         <p> 名称：${marker.place.name}</p >
@@ -43,6 +56,16 @@ class Map extends Component {
     map.setCenter(marker.getPosition());
   }
 
+  /**
+   * 创建简单标记
+   *
+   * @param {array} pos
+   * @param {string} label
+   * @param {string} style
+   * @param {string} title
+   * @returns
+   * @memberof Map
+   */
   createSimpleMarker(pos, label, style, title) {
     let simpleMarker = new this.state.SimpleMarker({
       draggable: false, // 可拖动，后续用来更改所在位置，展示先不需要该功能
@@ -64,7 +87,12 @@ class Map extends Component {
 
     return simpleMarker;
   }
-  // 标记当前中心位置
+
+  /**
+   * 标记当前中心位置
+   *
+   * @memberof Map
+   */
   markCenter() {
     let center = this.state.center;
     this.setState({
@@ -72,21 +100,28 @@ class Map extends Component {
     });
   }
 
-  makeMarkers(places) {
+  /**
+   * 批量创建标记
+   *
+   * @param {array} places
+   * @memberof Map
+   */
+  createMarkers(places) {
+    console.log("creating markerssssss");
+    this.cleanMarkers();
     let m = {};
     places.forEach(place => {
       m[place.id] = this.createMarker(place);
     });
     this.setState({ markers: m });
     this.state.map.add(Object.values(m));
-  }
-
-  createMarkers(places) {
-    this.cleanMarkers();
-    this.makeMarkers(places);
     this.state.map.setFitView();
   }
-
+  /**
+   * 清除地图上的标记
+   *
+   * @memberof Map
+   */
   cleanMarkers() {
     if (this.state.map) {
       this.state.map.remove(Object.values(this.state.markers));
@@ -96,13 +131,13 @@ class Map extends Component {
   /**
    * 通过IP获取所在城市
    *
-   * @param {*} IP IP地址
+   * @param {string} IP IP地址
    * @memberof App
    */
   getCityByIP(IP) {
-    const IP_str = (IP)?`&ip=${IP}`: ''
+    const IP_str = IP ? `&ip=${IP}` : "";
     let url = `https://restapi.amap.com/v3/ip?key=${webServiceKey}${IP_str}`;
-    console.log(url)
+    console.log(url);
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -114,7 +149,7 @@ class Map extends Component {
   /**
    * 通过城市名称获取城市中心坐标
    *
-   * @param {*} city 城市名称
+   * @param {string} city 城市名称
    * @memberof App
    */
   getCityCenter(city) {
@@ -132,11 +167,17 @@ class Map extends Component {
         this.initMap(center);
         // 搜索中心坐标附近餐厅
         // this.searchAround(center, 8, 50);
-      }).catch((err) => {
-        console.log(defaultCenter)
+      })
+      .catch(err => {
+        console.log(defaultCenter);
       });
   }
-
+  /**
+   * 初始化地图
+   *
+   * @param {array} center 地图中心点坐标
+   * @memberof Map
+   */
   initMap(center) {
     let map = new window.AMap.Map("map", {
       resizeEnable: true,
@@ -145,7 +186,7 @@ class Map extends Component {
     });
     this.setState({
       map
-    })
+    });
     this.props.onMapInited(center);
 
     let infoWindow = new window.AMap.InfoWindow({
@@ -156,7 +197,6 @@ class Map extends Component {
       this.setState({ SimpleMarker, infoWindow, map });
       this.markCenter();
       this.state.map.setFitView();
-
     });
   }
 
@@ -176,20 +216,21 @@ class Map extends Component {
     }
     // 每次收到新的props时，需要进行的动作
     if (this.state.map) {
-      console.log('map inited');
+      console.log("map inited");
       // debugger
       // 关闭当前显示的InfoWindow
       if (this.state.infoWindow) {
         this.state.infoWindow.close();
       }
-      // 刷新地图的marker
-      this.createMarkers(places);
       // 如果点击了PlaceList中的地点，则显示infoWindow
       if (clickedPlace) {
         let { markers, infoWindow, map } = this.state;
         let marker = markers[clickedPlace];
         this.popupInfoWindow(marker, infoWindow, map);
+        return; // 阻止刷新地图markers
       }
+      // 当下拉列表的值变化时，刷新地图的markers
+      this.createMarkers(places);
     }
   }
 
