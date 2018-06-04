@@ -31,13 +31,13 @@ class App extends Component {
    * 搜索中心点周边的餐厅
    *
    * @param {array} center 中心点坐标
-   * @param {number} times 搜索次数
+   * @param {number} [times=1] 搜索次数
    * @param {number} [pageNum=25] 每页数量
    * @memberof App
    */
-  searchAround(center, times, pageNum = 25) {
+  searchAround(center, times = 1, pageNum = 25) {
     for (let index = 1; index <= times; index++) {
-      this.searchAroundOnce(center, index, 50);
+      this.searchAroundOnce(center, index, pageNum);
     }
     this.setState({ enableFilter: true });
   }
@@ -102,7 +102,8 @@ class App extends Component {
   }
   // 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
   handleMapInited(center) {
-    this.searchAround(center, 8, 50);
+    // 加载1页数据，1页加载20条
+    this.searchAround(center, 1, 50);
   }
 
   handleClick(id) {

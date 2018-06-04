@@ -217,7 +217,6 @@ class Map extends Component {
     // 每次收到新的props时，需要进行的动作
     if (this.state.map) {
       console.log("map inited");
-      // debugger
       // 关闭当前显示的InfoWindow
       if (this.state.infoWindow) {
         this.state.infoWindow.close();
