@@ -15,6 +15,7 @@ class App extends Component {
       places: [],
       filterd_places: [],
       clickedPlaceId: "",
+      showSidebar: true
     };
   }
 
@@ -113,6 +114,14 @@ class App extends Component {
     });
   }
 
+  handleToggleSidebar(){
+    let { showSidebar} = this.state;
+    console.log('show sidebar:',showSidebar);
+    this.setState({
+      showSidebar: !showSidebar
+    })
+  }
+
   componentDidMount() {
     // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
   }
@@ -127,6 +136,7 @@ class App extends Component {
             onFilter={val => this.filterPlaces(val)}
             enable={this.state.enableFilter}
             onClick={id => this.handleClick(id)}
+            showSidebar={this.state.showSidebar}
           />
           <Map
             places={this.state.filterd_places}
@@ -134,6 +144,7 @@ class App extends Component {
               this.handleMapInited(center);
             }}
             clickedPlace={this.state.clickedPlaceId}
+            onToggleSidebar={()=>this.handleToggleSidebar()}
           />
         </main>
       </div>
