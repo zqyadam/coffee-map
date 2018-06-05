@@ -45,15 +45,27 @@ class Map extends Component {
    * @memberof Map
    */
   popupInfoWindow(marker, infoWindow, map) {
-    let content = `<div className="place-item">
-        <p> 名称：${marker.place.name}</p >
-        <p>地址：${marker.place.address}</p>
-        <p>距离：${marker.place.distance}米</p>
+    let name = `<p> 名称：${marker.place.name}</p >`;
+    let address = `<p>地址：${marker.place.address}</p>`;
+    let distance = `<p>距离：${marker.place.distance}米</p>`;;
+    let tel = !Array.isArray(marker.place.tel) ? `<p>联系方式：${marker.place.tel}</p>` : "";
+    let img = (marker.place.photos && marker.place.photos[0]) ? `<img src="${marker.place.photos[0].url}" alt="${marker.place.name}" width="150"/>`:'';
+    let rating = (!Array.isArray(marker.place.biz_ext.rating)) ? `<p>评分：${marker.place.biz_ext.rating}</p>`:'';
+    console.log(img)
+    let content = `<div class="pop-item">
+        ${name}
+        ${address}
+        ${distance}
+        ${tel}
+        ${rating}
+        ${img}
       </div >`;
+    console.log(content)
+    console.log(infoWindow)
     infoWindow.setContent(content);
     infoWindow.open(map, marker.getPosition());
     // 将选择的地点设置为地图中心
-    map.setCenter(marker.getPosition());
+    // map.setCenter(marker.getPosition());
   }
 
   /**
@@ -165,8 +177,6 @@ class Map extends Component {
         console.log("city center:", center);
         this.setState({ center: center });
         this.initMap(center);
-        // 搜索中心坐标附近餐厅
-        // this.searchAround(center, 8, 50);
       })
       .catch(err => {
         console.log(defaultCenter);
@@ -184,17 +194,16 @@ class Map extends Component {
       zoom: 18,
       center: center
     });
-    this.setState({
-      map
-    });
-    this.props.onMapInited(center);
-
     let infoWindow = new window.AMap.InfoWindow({
       offset: new window.AMap.Pixel(0, -20)
     });
+    this.setState({ map, infoWindow });
+
+
+    this.props.onMapInited(center);
 
     window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
-      this.setState({ SimpleMarker, infoWindow, map });
+      this.setState({ SimpleMarker });
       this.markCenter();
       this.state.map.setFitView();
     });
@@ -233,6 +242,10 @@ class Map extends Component {
     }
   }
 
+  toggleSidebar(event){
+    this.props.onToggleSidebar();
+  }
+
   componentDidMount() {
     console.log("component did mount");
     const { isScriptLoaded, isScriptLoadSucceed } = this.props;
@@ -240,7 +253,9 @@ class Map extends Component {
     }
   }
   render() {
-    return <div className="map-container" id="map" />;
+    return <div className="map-container" id="map">
+        <i className="iconfont icon-cebianlan btn-sidebar" onClick={(event)=>this.toggleSidebar(event)}/>
+      </div>;
   }
 }
 
