@@ -149,12 +149,12 @@ class Map extends Component {
       .then(res => res.json())
       .then(data => {
         let city = data.city;
-        this.getCityCenter(city);
         this.props.setCity(data.adcode);
+        this.getCityCenter(city);
       }).catch(err=>{
         let city = '沈阳';
-        this.getCityCenter(city);
         this.props.setCity(defaultadCode);
+        this.getCityCenter(city);
       });
   }
 

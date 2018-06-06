@@ -95,7 +95,7 @@ class Header extends Component {
   }
 
   componentWillReceiveProps({ cityCode }) {
-    if (!this.state.weather) {
+    if (!this.state.weather && cityCode) {
       // 避免重复抓取天气
       this.getWeatherInfo(cityCode);
     }
@@ -130,5 +130,9 @@ class Header extends Component {
     );
   }
 }
+
+Header.defaultProps = {
+  cityCode: ""
+};
 
 export default Header;
