@@ -16,7 +16,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "homepage": "http://zqyadam.github.io/restaurant-map",
+  "homepage": "https://zqyadam.github.io/restaurant-map",
   "devDependencies": {
     "gh-pages": "^1.2.0"
   }
