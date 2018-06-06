@@ -82,7 +82,7 @@ class Header extends Component {
    * @memberof Header
    */
   getWeatherInfo(adcode) {
-    const url = `http://restapi.amap.com/v3/weather/weatherInfo?key=${webServiceKey}&city=${adcode}`;
+    const url = `https://restapi.amap.com/v3/weather/weatherInfo?key=${webServiceKey}&city=${adcode}`;
     fetch(url)
       .then(res => res.json())
       .then(data => {
