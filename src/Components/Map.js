@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import scriptLoader from "react-async-script-loader";
-import { jskey, webServiceKey, defaultCenter } from "../data";
+import { jskey, webServiceKey, defaultCenter, defaultadCode } from "../data";
 
+// 测试IP
 // const IP = "113.230.121.67"; // 铁岭
-const IP = "119.188.132.10"; // 济南
-// console.log(center);
+// const IP = "119.188.132.10"; // 济南
+
 class Map extends Component {
   constructor(props) {
     super(props);
@@ -36,6 +37,7 @@ class Map extends Component {
     });
     return marker;
   }
+
   /**
    * 打开信息窗口
    *
@@ -51,7 +53,6 @@ class Map extends Component {
     let tel = !Array.isArray(marker.place.tel) ? `<p>联系方式：${marker.place.tel}</p>` : "";
     let img = (marker.place.photos && marker.place.photos[0]) ? `<img src="${marker.place.photos[0].url}" alt="${marker.place.name}" />`:'';
     let rating = (!Array.isArray(marker.place.biz_ext.rating)) ? `<p>评分：${marker.place.biz_ext.rating}</p>`:'';
-    console.log(img)
     let content = `<div class="pop-item">
         ${name}
         ${address}
@@ -60,8 +61,6 @@ class Map extends Component {
         ${rating}
         ${img}
       </div >`;
-    console.log(content)
-    console.log(infoWindow)
     infoWindow.setContent(content);
     infoWindow.open(map, marker.getPosition());
     // 将选择的地点设置为地图中心
@@ -93,10 +92,6 @@ class Map extends Component {
       title: title
     });
 
-    simpleMarker.on("dragend", event => {
-      console.log(event);
-    });
-
     return simpleMarker;
   }
 
@@ -119,7 +114,6 @@ class Map extends Component {
    * @memberof Map
    */
   createMarkers(places) {
-    console.log("creating markerssssss");
     this.cleanMarkers();
     let m = {};
     places.forEach(place => {
@@ -157,6 +151,10 @@ class Map extends Component {
         let city = data.city;
         this.getCityCenter(city);
         this.props.setCity(data.adcode);
+      }).catch(err=>{
+        let city = '沈阳';
+        this.getCityCenter(city);
+        this.props.setCity(defaultadCode);
       });
   }
 
@@ -181,9 +179,10 @@ class Map extends Component {
         this.initMap(center);
       })
       .catch(err => {
-        console.log(defaultCenter);
+        this.initMap(defaultCenter);
       });
   }
+
   /**
    * 初始化地图
    *
@@ -201,7 +200,6 @@ class Map extends Component {
     });
     this.setState({ map, infoWindow });
 
-
     this.props.onMapInited(center);
 
     window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
@@ -209,6 +207,16 @@ class Map extends Component {
       this.markCenter();
       this.state.map.setFitView();
     });
+  }
+
+  /**
+   * 向上传播侧边栏显示状态
+   *
+   * @param {*} event
+   * @memberof Map
+   */
+  toggleSidebar(event) {
+    this.props.onToggleSidebar();
   }
 
   componentWillReceiveProps({
@@ -221,13 +229,11 @@ class Map extends Component {
       // load finished
       if (isScriptLoadSucceed) {
         // 初始化地图
-        console.log("init in props");
         this.getCityByIP();
       } else this.props.onError();
     }
     // 每次收到新的props时，需要进行的动作
     if (this.state.map) {
-      console.log("map inited");
       // 关闭当前显示的InfoWindow
       if (this.state.infoWindow) {
         this.state.infoWindow.close();
@@ -244,16 +250,12 @@ class Map extends Component {
     }
   }
 
-  toggleSidebar(event){
-    this.props.onToggleSidebar();
-  }
-
   componentDidMount() {
-    console.log("component did mount");
     const { isScriptLoaded, isScriptLoadSucceed } = this.props;
     if (isScriptLoaded && isScriptLoadSucceed) {
     }
   }
+
   render() {
     return <div className="map-container" id="map">
         <i className="iconfont icon-cebianlan btn-sidebar" onClick={(event)=>this.toggleSidebar(event)}/>

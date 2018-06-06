@@ -75,14 +75,18 @@ class Header extends Component {
     }
   }
 
+  /**
+   * 抓取天气信息
+   *
+   * @param {string} adcode
+   * @memberof Header
+   */
   getWeatherInfo(adcode) {
     const url = `http://restapi.amap.com/v3/weather/weatherInfo?key=${webServiceKey}&city=${adcode}`;
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        console.log(data);
         if (data.info === "OK" && data.infocode === "10000") {
-          console.log(data.lives[0]);
           this.setState({
             weather: data.lives[0]
           });
@@ -91,15 +95,15 @@ class Header extends Component {
   }
 
   componentWillReceiveProps({ cityCode }) {
-    console.log(cityCode);
     if (!this.state.weather) {
+      // 避免重复抓取天气
       this.getWeatherInfo(cityCode);
     }
   }
 
   render() {
     let { weather } = this.state;
-    // console.log(`iconfont ${this.getWeatherIcon(weather.weather)}`);
+
     return (
       <div>
         <header className="header">

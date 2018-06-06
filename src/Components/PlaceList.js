@@ -3,26 +3,24 @@ import PlaceItem from "./PlaceItem";
 
 class PlaceList extends Component {
   state = {
-    places: [],
     current_filter_value: "050",
-    show: false
   };
 
-  componentWillReceiveProps({ places, showSidebar }) {
-    this.setState({
-      places: places,
-      show: showSidebar
-    });
-  }
-
+  /**
+   * 处理侧边栏变化事件
+   *
+   * @param {string} val
+   * @memberof PlaceList
+   */
   handleSelectChange(val) {
     this.setState({ current_filter_value: val });
     this.props.onFilter(val);
   }
 
   render() {
-    let { places, current_filter_value, show } = this.state;
-    let className = `place-list ${show ? 'show' : 'hide'}`;
+    let { current_filter_value } = this.state;
+    let { places, showSidebar, enable } = this.props;
+    let className = `${showSidebar ? "show" : "hide"} place-list `;
     return (
       <div className={className}>
         <div className="place-select-container">
@@ -32,7 +30,7 @@ class PlaceList extends Component {
             onChange={event => {
               this.handleSelectChange(event.target.value);
             }}
-            disabled={!this.props.enable}
+            disabled={!enable}
           >
             <option value="050">所有餐厅</option>
             <option value="0501">中餐厅</option>
@@ -62,7 +60,9 @@ class PlaceList extends Component {
 }
 
 PlaceList.defaultProps = {
-  enable: false
+  enable: false,
+  showSidebar: false,
+  places : []
 };
 
 export default PlaceList;

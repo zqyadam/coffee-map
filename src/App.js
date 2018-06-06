@@ -7,29 +7,18 @@ import PlaceList from "./Components/PlaceList";
 import { webServiceKey } from "./data";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      enableFilter: false,
-      adcode: "",
-      places: [],
-      filterd_places: [],
-      clickedPlaceId: "",
-      showSidebar: true
-    };
-  }
-
-  // searchAroundByFourSqueare() {
-  //   const url = `https://api.foursquare.com/v2/venues/search?ll=${[center[1], center[0]]}&radius=2000&query=咖啡&client_secret=${client_secret}&client_id=${client_id}&v=${fs_v}`;
-  //   console.log(url)
-  //   fetch(url).then(response => response.json()).then((data) => {
-  //     console.log(data)
-  //     this.setState({ places : data.response.venues });
-  //   })
-  // }
+  state = {
+    enableFilter: false,
+    adcode: "",
+    places: [],
+    filterd_places: [],
+    clickedPlaceId: "",
+    showSidebar: true
+  };
 
   /**
    * 搜索中心点周边的餐厅
+   * 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
    *
    * @param {array} center 中心点坐标
    * @param {number} [times=1] 搜索次数
@@ -52,11 +41,9 @@ class App extends Component {
    * @memberof App
    */
   searchAroundOnce(center, page = 1, pageNum = 25) {
-    // let center = this.state.center;
     let url = `https://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(
       ","
     )}&types=050000&radius=3000&offset=${pageNum}&page=${page}&extensions=all`;
-    console.log(url);
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -102,42 +89,57 @@ class App extends Component {
     });
   }
 
-  setCity(city){
-    console.log(city)
+  /**
+   * 设置城市adcode，给Header获取天气预报
+   *
+   * @param {*} city
+   * @memberof App
+   */
+  setCity(city) {
     this.setState({
       adcode: city
-    })
+    });
   }
 
-  // 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
+  /**
+   * 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
+   *
+   * @param {*} center
+   * @memberof App
+   */
   handleMapInited(center) {
-    // 加载1页数据，1页加载20条
-    this.searchAround(center, 1, 50);
+    // 加载2页数据，1页加载20条
+    this.searchAround(center, 2, 50);
   }
 
+  /**
+   * 点击侧边栏的餐厅处理事件
+   *
+   * @param {string} id
+   * @memberof App
+   */
   handleClick(id) {
-    console.log("place item clicked", id);
     this.setState({
       clickedPlaceId: id
     });
   }
 
-  handleToggleSidebar(){
-    let { showSidebar} = this.state;
-    console.log('show sidebar:',showSidebar);
+  /**
+   * 切换侧边栏显示状态
+   *
+   * @memberof App
+   */
+  handleToggleSidebar() {
+    let { showSidebar } = this.state;
     this.setState({
       showSidebar: !showSidebar
-    })
-  }
-
-  componentDidMount() {
-    // 向高德地图搜索API发起4次请求，由于每次请求数量有限，所以分多次请求，然后合并，避免一次请求出现错误和时间过长导致的超时报错
+    });
   }
 
   render() {
     return (
       <div className="app">
-        <Header cityCode={this.state.adcode}/>
+        <Header cityCode={this.state.adcode} />
         <main className="main">
           <PlaceList
             places={this.state.filterd_places}
@@ -152,8 +154,8 @@ class App extends Component {
               this.handleMapInited(center);
             }}
             clickedPlace={this.state.clickedPlaceId}
-            onToggleSidebar={()=>this.handleToggleSidebar()}
-            setCity={city=>this.setCity(city)}
+            onToggleSidebar={() => this.handleToggleSidebar()}
+            setCity={city => this.setCity(city)}
           />
         </main>
       </div>
