@@ -5,35 +5,47 @@ body {
   margin: 0;
 }
 
-.app {
+/* .app {
   text-align: left;
-}
+} */
 
-.app-header {
+.header {
   background-color: white;
   height: 60px;
-  display: flex;
   align-items: center;
   align-content: space-between;
   color: #222;
   border-bottom: 1px solid #4b4b4b;
+  display: flex;
+  justify-content: space-between;
 }
 
-.app-logo {
+.header-left{
+  display: flex;
+}
+.logo {
   height: 48px;
   color: #4b4b4b;
-  margin: 0 10px 0 20px;
+  margin: auto 10px auto 20px;
 }
 
-.app-title {
+.title {
   line-height: 60px;
   color: #4b4b4b;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   margin: 0;
 }
 
-.app-intro {
-  font-size: large;
+.weather {
+  margin-right:10px;
+}
+.weather i{
+  font-size: 30px;
+}
+.weather p{
+  margin: 0;
+  font-size: 12px;
+  text-align: center;
 }
 
 .main {
@@ -44,7 +56,7 @@ body {
 .place-list {
   height: 100%;
   border-right: 1px solid #4b4b4b;
-  transition: 0.1s ease-in;
+  /* transition: 0.2s; */
   width: 400px;
 }
 
@@ -99,7 +111,7 @@ body {
 .pop-item img {
   width: 100%;
   max-width: 300px;
-  height:200px;
+  height: 200px;
   object-fit: cover;
 }
 
@@ -119,34 +131,42 @@ body {
   font-size: 20px;
 }
 
-.show {
-  display: block;
-}
+@media screen and (max-width: 600px){
+  .show {
+    display: block;
+  }
 
-.hide {
-  display: none;
-}
-
-@media screen and (max-width: 600px), screen and (max-height: 500px) {
-  .app-header {
+  .hide {
+    display: none;
+  }
+  .header {
     height: 50px;
   }
 
-  .app-logo {
+  .logo {
     height: 38px;
-    margin: 0 10px 0 15px;
+    margin: auto 10px auto 15px;
   }
 
-  .app-title {
+  .title {
     line-height: 50px;
   }
+
   .main {
     height: calc(100vh - 51px);
   }
 
   .pop-item img {
     max-width: 200px;
-    height:200px;
+    height: 200px;
     object-fit: cover;
+  }
+}
+@media screen and (min-width: 601px) {
+  .place-list {
+    display: block;
+  }
+  .btn-sidebar{
+    display: none;
   }
 }

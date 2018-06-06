@@ -49,7 +49,7 @@ class Map extends Component {
     let address = `<p>地址：${marker.place.address}</p>`;
     let distance = `<p>距离：${marker.place.distance}米</p>`;;
     let tel = !Array.isArray(marker.place.tel) ? `<p>联系方式：${marker.place.tel}</p>` : "";
-    let img = (marker.place.photos && marker.place.photos[0]) ? `<img src="${marker.place.photos[0].url}" alt="${marker.place.name}" width="150"/>`:'';
+    let img = (marker.place.photos && marker.place.photos[0]) ? `<img src="${marker.place.photos[0].url}" alt="${marker.place.name}" />`:'';
     let rating = (!Array.isArray(marker.place.biz_ext.rating)) ? `<p>评分：${marker.place.biz_ext.rating}</p>`:'';
     console.log(img)
     let content = `<div class="pop-item">
@@ -65,7 +65,7 @@ class Map extends Component {
     infoWindow.setContent(content);
     infoWindow.open(map, marker.getPosition());
     // 将选择的地点设置为地图中心
-    // map.setCenter(marker.getPosition());
+    map.setCenter(marker.getPosition());
   }
 
   /**
@@ -129,6 +129,7 @@ class Map extends Component {
     this.state.map.add(Object.values(m));
     this.state.map.setFitView();
   }
+
   /**
    * 清除地图上的标记
    *
@@ -155,6 +156,7 @@ class Map extends Component {
       .then(data => {
         let city = data.city;
         this.getCityCenter(city);
+        this.props.setCity(data.adcode);
       });
   }
 
@@ -167,7 +169,7 @@ class Map extends Component {
   getCityCenter(city) {
     // 获取城市中心
     fetch(
-      `http://restapi.amap.com/v3/config/district?keywords=${city}&key=${webServiceKey}&subdistrict=0&extensions=base`
+      `https://restapi.amap.com/v3/config/district?keywords=${city}&key=${webServiceKey}&subdistrict=0&extensions=base`
     )
       .then(response => {
         return response.json();
@@ -260,6 +262,6 @@ class Map extends Component {
 }
 
 export default scriptLoader(
-  `//webapi.amap.com/maps?v=1.4.7&key=${jskey}`,
-  `//webapi.amap.com/ui/1.0/main.js`
+  `https://webapi.amap.com/maps?v=1.4.7&key=${jskey}`,
+  `https://webapi.amap.com/ui/1.0/main.js`
 )(Map);

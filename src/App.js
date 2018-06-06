@@ -53,7 +53,7 @@ class App extends Component {
    */
   searchAroundOnce(center, page = 1, pageNum = 25) {
     // let center = this.state.center;
-    let url = `http://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(
+    let url = `https://restapi.amap.com/v3/place/around?key=${webServiceKey}&location=${center.join(
       ","
     )}&types=050000&radius=3000&offset=${pageNum}&page=${page}&extensions=all`;
     console.log(url);
@@ -101,6 +101,14 @@ class App extends Component {
       current_filter_value: current_filter_value
     });
   }
+
+  setCity(city){
+    console.log(city)
+    this.setState({
+      adcode: city
+    })
+  }
+
   // 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
   handleMapInited(center) {
     // 加载1页数据，1页加载20条
@@ -129,7 +137,7 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-        <Header />
+        <Header cityCode={this.state.adcode}/>
         <main className="main">
           <PlaceList
             places={this.state.filterd_places}
@@ -145,6 +153,7 @@ class App extends Component {
             }}
             clickedPlace={this.state.clickedPlaceId}
             onToggleSidebar={()=>this.handleToggleSidebar()}
+            setCity={city=>this.setCity(city)}
           />
         </main>
       </div>
