@@ -120,7 +120,7 @@ class Header extends Component {
               ) : (
                 <p>{weather.weather}</p>
               )}
-              <p>{weather.temperature}℃</p>
+              {weather.temperature ? <p>{weather.temperature}℃</p> : ""}
             </div>
           ) : (
             ""
