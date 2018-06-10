@@ -39,8 +39,9 @@ body {
 .weather {
   margin-right:10px;
 }
-.weather i{
-  font-size: 30px;
+.weather img{
+  widows: 32px;
+  height: 32px;
 }
 .weather p{
   margin: 0;
