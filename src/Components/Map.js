@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import scriptLoader from "react-async-script-loader";
-import { jskey, webServiceKey, defaultCenter, defaultadCode } from "../data";
+import { jskey, webServiceKey, defaultCenter } from "../data";
 
 // 测试IP
 // const IP = "113.230.121.67"; // 铁岭
@@ -14,7 +14,6 @@ class Map extends Component {
       SimpleMarker: null,
       markers: {},
       infoWindow: null,
-      center: []
     };
   }
 
@@ -49,10 +48,19 @@ class Map extends Component {
   popupInfoWindow(marker, infoWindow, map) {
     let name = `<p> 名称：${marker.place.name}</p >`;
     let address = `<p>地址：${marker.place.address}</p>`;
-    let distance = `<p>距离：${marker.place.distance}米</p>`;;
-    let tel = !Array.isArray(marker.place.tel) ? `<p>联系方式：${marker.place.tel}</p>` : "";
-    let img = (marker.place.photos && marker.place.photos[0]) ? `<img src="${marker.place.photos[0].url}" alt="${marker.place.name}" />`:'';
-    let rating = (!Array.isArray(marker.place.biz_ext.rating)) ? `<p>评分：${marker.place.biz_ext.rating}</p>`:'';
+    let distance = `<p>距离：${marker.place.distance}米</p>`;
+    let tel = !Array.isArray(marker.place.tel)
+      ? `<p>联系方式：${marker.place.tel}</p>`
+      : "";
+    let img =
+      marker.place.photos && marker.place.photos[0]
+        ? `<img src="${marker.place.photos[0].url}" alt="${
+            marker.place.name
+          }" />`
+        : "";
+    let rating = !Array.isArray(marker.place.biz_ext.rating)
+      ? `<p>评分：${marker.place.biz_ext.rating}</p>`
+      : "";
     let content = `<div class="pop-item">
         ${name}
         ${address}
@@ -62,14 +70,15 @@ class Map extends Component {
         ${img}
       </div >`;
     infoWindow.setContent(content);
-    // 设置弹跳动画效果
+    // 将选择的地点设置为地图中心
     map.setCenter(marker.getPosition());
-    infoWindow.open(map, marker.getPosition());
+    // 设置弹跳动画效果
     marker.setAnimation("AMAP_ANIMATION_BOUNCE");
     setTimeout(() => {
       marker.setAnimation(null);
     }, 2500);
-    // 将选择的地点设置为地图中心
+    // 打开信息窗口
+    infoWindow.open(map, marker.getPosition());
   }
 
   /**
@@ -105,8 +114,7 @@ class Map extends Component {
    *
    * @memberof Map
    */
-  markCenter() {
-    let center = this.state.center;
+  markCenter(center) {
     this.setState({
       myPosMarker: this.createSimpleMarker(center, "这", "red", "我的位置")
     });
@@ -154,12 +162,11 @@ class Map extends Component {
       .then(res => res.json())
       .then(data => {
         let city = data.city;
-        this.props.setCity(data.adcode);
         this.getCityCenter(city);
-      }).catch(err=>{
-        let city = '沈阳';
-        this.props.setCity(defaultadCode);
-        this.getCityCenter(city);
+      })
+      .catch(err => {
+        // 若根据IP地址获取失败，则直接使用默认值进行初始化
+        this.initMap(defaultCenter);
       });
   }
 
@@ -180,10 +187,10 @@ class Map extends Component {
       .then(data => {
         let center = data.districts[0].center.split(",");
         console.log("city center:", center);
-        this.setState({ center: center });
         this.initMap(center);
       })
       .catch(err => {
+        // 若获取坐标失败，则直接使用默认值进行初始化，并向App组件传递
         this.initMap(defaultCenter);
       });
   }
@@ -198,7 +205,6 @@ class Map extends Component {
     let map = new window.AMap.Map("map", {
       resizeEnable: true,
       zoom: 18,
-      center: center
     });
     let infoWindow = new window.AMap.InfoWindow({
       offset: new window.AMap.Pixel(0, -20)
@@ -209,7 +215,7 @@ class Map extends Component {
 
     window.AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
       this.setState({ SimpleMarker });
-      this.markCenter();
+      this.markCenter(center);
       this.state.map.setFitView();
     });
   }
@@ -256,9 +262,15 @@ class Map extends Component {
   }
 
   render() {
-    return <div className="map-container" id="map" role="application">
-        <i role="button" className="iconfont icon-cebianlan btn-sidebar" onClick={(event)=>this.toggleSidebar(event)}/>
-      </div>;
+    return (
+      <div className="map-container" id="map" role="application">
+        <i
+          role="button"
+          className="iconfont icon-cebianlan btn-sidebar"
+          onClick={event => this.toggleSidebar(event)}
+        />
+      </div>
+    );
   }
 }
 

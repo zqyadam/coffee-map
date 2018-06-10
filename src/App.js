@@ -90,18 +90,6 @@ class App extends Component {
   }
 
   /**
-   * 设置城市adcode，给Header获取天气预报
-   *
-   * @param {*} city
-   * @memberof App
-   */
-  setCity(city) {
-    this.setState({
-      adcode: city
-    });
-  }
-
-  /**
    * 地图加载完成后，使下拉列表可用，否则在加载完成前禁用，以免报错
    *
    * @param {*} center
@@ -158,7 +146,6 @@ class App extends Component {
             }}
             clickedPlace={this.state.clickedPlaceId}
             onToggleSidebar={() => this.handleToggleSidebar()}
-            setCity={city => this.setCity(city)}
           />
         </main>
       </div>
