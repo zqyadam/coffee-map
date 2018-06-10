@@ -62,9 +62,14 @@ class Map extends Component {
         ${img}
       </div >`;
     infoWindow.setContent(content);
-    infoWindow.open(map, marker.getPosition());
-    // 将选择的地点设置为地图中心
+    // 设置弹跳动画效果
     map.setCenter(marker.getPosition());
+    infoWindow.open(map, marker.getPosition());
+    marker.setAnimation("AMAP_ANIMATION_BOUNCE");
+    setTimeout(() => {
+      marker.setAnimation(null);
+    }, 2500);
+    // 将选择的地点设置为地图中心
   }
 
   /**
@@ -250,15 +255,9 @@ class Map extends Component {
     }
   }
 
-  componentDidMount() {
-    const { isScriptLoaded, isScriptLoadSucceed } = this.props;
-    if (isScriptLoaded && isScriptLoadSucceed) {
-    }
-  }
-
   render() {
-    return <div className="map-container" id="map">
-        <i className="iconfont icon-cebianlan btn-sidebar" onClick={(event)=>this.toggleSidebar(event)}/>
+    return <div className="map-container" id="map" role="application">
+        <i role="button" className="iconfont icon-cebianlan btn-sidebar" onClick={(event)=>this.toggleSidebar(event)}/>
       </div>;
   }
 }
