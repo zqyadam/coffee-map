@@ -57,8 +57,8 @@ body {
 .place-list {
   height: 100%;
   border-right: 1px solid #4b4b4b;
-  display: block;
   width: 400px;
+  transition: 0.3s;
 }
 
 .place-select-container {
@@ -88,6 +88,7 @@ body {
   overflow-y: auto;
   height: calc(100% - 70px);
 }
+
 .place-item {
   font-size: 12px;
   border: 1px solid #4b4b4b;
@@ -135,11 +136,13 @@ body {
 
 @media screen and (max-width: 600px){
   .show {
-    display: block;
+    width: 400px;
+    border-right: 1px solid #4b4b4b;
   }
 
   .hide {
-    display: none;
+    width: 0;
+    border: none;
   }
   .header {
     height: 50px;
