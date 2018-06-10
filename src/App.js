@@ -9,11 +9,11 @@ import { webServiceKey } from "./data";
 class App extends Component {
   state = {
     enableFilter: false,
-    adcode: "",
     places: [],
     filterd_places: [],
     clickedPlaceId: "",
-    showSidebar: true
+    showSidebar: true,
+    center: []
   };
 
   /**
@@ -110,6 +110,9 @@ class App extends Component {
   handleMapInited(center) {
     // 加载2页数据，1页加载20条
     this.searchAround(center, 2, 50);
+    this.setState({
+      center: center
+    })
   }
 
   /**
@@ -139,7 +142,7 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-        <Header cityCode={this.state.adcode} />
+        <Header location={this.state.center} />
         <main className="main">
           <PlaceList
             places={this.state.filterd_places}
