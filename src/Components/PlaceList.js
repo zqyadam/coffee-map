@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import PlaceItem from "./PlaceItem";
 
 class PlaceList extends Component {
-  state = {
-    current_filter_value: "050",
-  };
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      current_filter_value: "050"
+    };
+  }
   /**
    * 处理侧边栏变化事件
    *
@@ -31,6 +33,7 @@ class PlaceList extends Component {
               this.handleSelectChange(event.target.value);
             }}
             disabled={!enable}
+            aria-label="餐厅类型"
           >
             <option value="050">所有餐厅</option>
             <option value="0501">中餐厅</option>
@@ -62,7 +65,7 @@ class PlaceList extends Component {
 PlaceList.defaultProps = {
   enable: false,
   showSidebar: false,
-  places : []
+  places: []
 };
 
 export default PlaceList;
