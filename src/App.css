@@ -42,11 +42,13 @@ body {
 .weather img{
   widows: 32px;
   height: 32px;
+  filter: grayscale(100%);
 }
 .weather p{
   margin: 0;
   font-size: 12px;
   text-align: center;
+  color: #5e5d5d;
 }
 
 .main {

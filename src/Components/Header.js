@@ -269,7 +269,6 @@ class Header extends Component {
           this.setState({ weather: data.HeWeather6[0].now });
         }else{
           console.error("天气信息获取失败", data);
-
         }
       })
       .catch(err => {
